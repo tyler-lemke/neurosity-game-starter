@@ -27,16 +27,34 @@ const main = async () => {
   console.log("Logged in");
 };
 
-neurosity.kinesis("tongue").subscribe(async (intent) => {
-  // Change the number below to change the probility match for
-  // firing off the code in the if statement
-  const confidenceMatch = intent.confidence > 0.9;
+const keyboardDelay = 50;
+robot.setKeyboardDelay(keyboardDelay); //set keyboard delay for each keypress
+
+neurosity.kinesis("mentalMath").subscribe(async (intent) => {
+  //dial in the confidence
+  const confidenceMatch = intent.confidence > 0.7;
+  //key you want to be pressed
+  const actionKey = "space";
   if (confidenceMatch) {
-    // Simulate pressing the escape key
-    robot.keyTap("space");
-    // robot.keyToggle("space", "down") // this will hold down space and not let go
-    console.log("We escaped!");
+    robot.keyTap(actionKey);
+    console.log(`${actionKey} pressed with ${keyboardDelay}ms of delay`);
   }
 });
 
+let alreadyToggled = false;
+neurosity.kinesis("tongue").subscribe(async (intent) => {
+  const enableConfidenceMatch = intent.confidence > 0.9;
+  const disableConfidenceMatch = intent.confidence < 0.4;
+  const actionKey = "space";
+
+  if (enableConfidenceMatch && !alreadyToggled) {
+    robot.keyToggle(actionKey, "down");
+    console.log(`${actionKey} Key Toggled!`);
+    alreadyToggled = true;
+  } else if (disableConfidenceMatch) {
+    robot.keyToggle(actionKey, "up");
+    alreadyToggled = false;
+    console.log(`${actionKey} Key Untoggled!`);
+  }
+});
 main();
