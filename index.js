@@ -27,13 +27,14 @@ const main = async () => {
   console.log("Logged in");
 };
 
-const keyboardDelay = 50;
+const keyboardDelay = 200;
 robot.setKeyboardDelay(keyboardDelay); //set keyboard delay for each keypress
 
 neurosity.kinesis("mentalMath").subscribe(async (intent) => {
   //dial in the confidence
   const confidenceMatch = intent.confidence > 0.7;
   //key you want to be pressed
+  // all of the available keys you can use https://robotjs.io/docs/syntax#keyboard
   const actionKey = "space";
   if (confidenceMatch) {
     robot.keyTap(actionKey);
@@ -41,20 +42,4 @@ neurosity.kinesis("mentalMath").subscribe(async (intent) => {
   }
 });
 
-let alreadyToggled = false;
-neurosity.kinesis("tongue").subscribe(async (intent) => {
-  const enableConfidenceMatch = intent.confidence > 0.9;
-  const disableConfidenceMatch = intent.confidence < 0.4;
-  const actionKey = "space";
-
-  if (enableConfidenceMatch && !alreadyToggled) {
-    robot.keyToggle(actionKey, "down");
-    console.log(`${actionKey} Key Toggled!`);
-    alreadyToggled = true;
-  } else if (disableConfidenceMatch) {
-    robot.keyToggle(actionKey, "up");
-    alreadyToggled = false;
-    console.log(`${actionKey} Key Untoggled!`);
-  }
-});
 main();
